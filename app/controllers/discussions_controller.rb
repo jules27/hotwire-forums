@@ -3,6 +3,7 @@ class DiscussionsController < ApplicationController
   before_action :set_discussion, only: [:show, :edit, :update, :destroy]
 
   def show
+    @new_post = @discussion.posts.new
   end
 
 	def index
@@ -11,6 +12,7 @@ class DiscussionsController < ApplicationController
 
   def new
     @discussion = Discussion.new
+    @discussion.posts.new
   end
 
   def create
@@ -49,7 +51,7 @@ class DiscussionsController < ApplicationController
   private
 
   def discussion_params
-    params.require(:discussion).permit(:name, :closed, :pinned)
+    params.require(:discussion).permit(:name, :closed, :pinned, posts_attributes: :body)
   end
 
   def set_discussion
