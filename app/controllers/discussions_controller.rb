@@ -3,6 +3,7 @@ class DiscussionsController < ApplicationController
   before_action :set_discussion, only: [:show, :edit, :update, :destroy]
 
   def show
+    @posts = @discussion.posts.all.order(created_at: :asc)
     @new_post = @discussion.posts.new
   end
 
