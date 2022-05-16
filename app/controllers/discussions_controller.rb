@@ -6,7 +6,7 @@ class DiscussionsController < ApplicationController
   end
 
 	def index
-		@discussions = Discussion.all
+		@discussions = Discussion.all.order(updated_at: :desc)
 	end
 
   def new
@@ -31,6 +31,9 @@ class DiscussionsController < ApplicationController
   def update
     respond_to do |format|
       if @discussion.update(discussion_params)
+        # Broadcast to anyone who is subscribed on the discussion page
+        @discussion.broadcast_replace(partial: "discussions/header", locals: { discussion: @discussion })
+
         format.html { redirect_to @discussion, notice: "Discussion updated" }
       else
         format.html { render :edit, status: :unprocessable_entity }
