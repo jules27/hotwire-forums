@@ -1,7 +1,12 @@
 <div id="<%= dom_id(discussion) %>" class="mb-2">
-	<h2><%= discussion.name %></h2>
+	<h2><%= link_to discussion.name, discussion_path(discussion) %></h2>
 
 	Pinned: <%= discussion.pinned %>
 	|
 	Closed: <%= discussion.closed %>
+
+  <div>
+    <%= link_to "Edit", edit_discussion_path(discussion) %> |
+    <%= link_to "Delete", discussion, method: :delete, data: { confirm: "Are you sure? This cannot be undone" } %>
+  </div>
 </div>

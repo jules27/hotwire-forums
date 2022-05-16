@@ -1,13 +1,14 @@
-<div class="d-flex justified-content-between align-items-center">
+<div class="d-flex justify-content-between align-items-center">
 	<h1>Discussions</h1>
 
-	<%= link_to "New Discussion", root_path, class: "btn btn-primary" %>
+	<%= link_to "New Discussion", new_discussion_path, class: "btn btn-primary" %>
 </div>
 
 <div class="row mt-4">
 	<div class="col">
 		<div id="discussions">
-			<%= render "discussions" %>
+			<%#= render "discussions" %>
+      <%= render partial: "discussion", collection: @discussions %>
 		</div>
 	</div>
 </div>
