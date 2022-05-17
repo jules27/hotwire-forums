@@ -3,12 +3,12 @@ class DiscussionsController < ApplicationController
   before_action :set_discussion, only: [:show, :edit, :update, :destroy]
 
   def show
-    @posts = @discussion.posts.all.order(created_at: :asc)
+    @posts = @discussion.posts.includes(:user, :rich_text_body).order(created_at: :asc)
     @new_post = @discussion.posts.new
   end
 
 	def index
-		@discussions = Discussion.all.order(updated_at: :desc)
+		@discussions = Discussion.all.pinned_first
 	end
 
   def new
@@ -52,6 +52,17 @@ class DiscussionsController < ApplicationController
           # Update categories by replacing them. This updates the counters in the sidebar.
           old_category.reload.broadcast_replace_to("categories")
           new_category.reload.broadcast_replace_to("categories")
+        end
+
+        # If a discussion is closed, broadcast that update
+        if @discussion.saved_change_to_closed?
+          @discussion.broadcast_action_to(
+            @discussion,
+            action: :replace,
+            target: "new_post_form",
+            partial: "discussions/posts/form",
+            locals: { post: @discussion.posts.new }
+          )
         end
 
         format.html { redirect_to @discussion, notice: "Discussion updated" }
