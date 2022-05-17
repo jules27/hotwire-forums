@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :discussions, dependent: :destroy
   has_many :posts, dependent: :destroy
+  has_many :discussion_subscriptions, dependent: :destroy
 
   validates :username, presence: true, uniqueness: true
 end
