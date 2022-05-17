@@ -25,6 +25,8 @@ module Discussions
 
       respond_to do |format|
         if @post.save
+          send_post_notification!(@post)
+
           format.html { redirect_to discussion_path(@discussion), notice: "Post created" }
         else
           format.turbo_stream
@@ -50,6 +52,11 @@ module Discussions
 
     def set_post
       @post = @discussion.posts.find(params[:id])
+    end
+
+    def send_post_notification!(post)
+      post_subscribers = post.discussion.subscribed_users - [post.user]
+      NewPostNotification.with(post: post).deliver_later(post_subscribers)
     end
 
     def post_params
