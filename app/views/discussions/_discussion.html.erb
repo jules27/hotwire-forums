@@ -5,6 +5,10 @@
 	|
 	Closed: <%= discussion.closed %>
 
+  <br />
+
+  Posted in: <%= discussion.category_name %> | Posts: <%= discussion.posts_count %>
+
   <div>
     <%= link_to "Edit", edit_discussion_path(discussion) %> |
     <%= link_to "Delete", discussion, method: :delete, data: { confirm: "Are you sure? This cannot be undone" } %>

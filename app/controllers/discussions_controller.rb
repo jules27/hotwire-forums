@@ -37,6 +37,23 @@ class DiscussionsController < ApplicationController
         # Broadcast to anyone who is subscribed on the discussion page
         @discussion.broadcast_replace(partial: "discussions/header", locals: { discussion: @discussion })
 
+        # If the category is changed, broadcast the change so it's
+        # updated in real time for subscribers
+        if @discussion.saved_change_to_category_id?
+          old_category_id, new_category_id = @discussion.saved_change_to_category_id
+
+          old_category = Category.find(old_category_id)
+          new_category = Category.find(new_category_id)
+
+          # Remove it from the old category list / insert to new list
+          @discussion.broadcast_remove_to(old_category)
+          @discussion.broadcast_prepend_to(new_category)
+
+          # Update categories by replacing them. This updates the counters in the sidebar.
+          old_category.reload.broadcast_replace_to("categories")
+          new_category.reload.broadcast_replace_to("categories")
+        end
+
         format.html { redirect_to @discussion, notice: "Discussion updated" }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +69,7 @@ class DiscussionsController < ApplicationController
   private
 
   def discussion_params
-    params.require(:discussion).permit(:name, :closed, :pinned, posts_attributes: :body)
+    params.require(:discussion).permit(:name, :category_id, :closed, :pinned, posts_attributes: :body)
   end
 
   def set_discussion
